@@ -1,0 +1,10 @@
+pandas 
+numpy 
+scipy
+python-chess 
+scikit-learn 
+matplotlib 
+seaborn 
+shap 
+jupyter 
+ipywidgets
