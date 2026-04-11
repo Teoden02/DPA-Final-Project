@@ -53,5 +53,8 @@ Come si evince dal grafico sottostante, oltre una certa soglia critica di osserv
 Per il progetto utlizzare questo dataset: https://www.kaggle.com/datasets/arevel/chess-games 
 inserendolo direttamente nella cartella DPA_FINAL_PROJECT 
 controllare non ci siano altri file .csv
+<<<<<<< HEAD
 Tutte le librerie richieste sono elencate nei requirement da installare nel virtual enviroment
+=======
+>>>>>>> 616262ed020cec8c7c780a0e4543403c02ecccc4
 
