@@ -1,6 +1,5 @@
 # ♟️ Ottimizzazione Convessa sui Big Data: SAGA vs L-BFGS
 
-
 Questo repository contiene un'analisi matematica e computazionale sui tassi di convergenza dei risolutori per la Regressione Logistica. 
 Gli scacchi vengono utilizzati come **generatore di complessità spaziale**: estraendo centinaia di migliaia di posizioni da un dataset di partite, abbiamo costruito una matrice densa per testare il limite fisico e matematico degli algoritmi di ottimizzazione, dimostrando asintoticamente il **collasso dei metodi Batch (L-BFGS)** in favore dei **metodi Stocastici (SAGA)** nell'era dei Big Data.
 
