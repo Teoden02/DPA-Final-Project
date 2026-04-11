@@ -22,12 +22,12 @@ Il progetto è suddiviso in fasi sequenziali all'interno di un Jupyter Notebook:
 ### Fase 1: Estrazione e Spazio Vettoriale
 
 * **Parsing PGN:** Traduzione dinamica del formato scacchistico ufficiale tramite RegEx.
-* **Feature Extraction:** Estrapolazione delle coordinate vettoriali (X, Y) dei pezzi al 40° ply (metà partita), con gestione dinamica delle promozioni dei pedoni.
+* **Feature Extraction:** Estrapolazione delle coordinate vettoriali (X, Y) dei pezzi con gestione dinamica delle promozioni dei pedoni.
 * **Standardizzazione:** Scaling dei dati per garantire una funzione di costo (Log-Loss) ben condizionata, con $\mu = 0$ e $\sigma^2 = 1$.
 
 ### Fase 2: Benchmark e Validazione
 
-* Addestramento parallelo di modelli SAGA e L-BFGS su scaglioni di dati crescenti (10k, 50k, 250k+).
+* Addestramento parallelo di modelli SAGA e L-BFGS sul dataset ripulito.
 * Dimostrazione empirica del raggiungimento del medesimo minimo globale della funzione convessa (concordanza delle Matrici di Confusione > 99.9%).
 
 ### Fase 3: Calcolo Approssimativo Costo Computazionale: SAGA vs L-BFGS
