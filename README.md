@@ -30,28 +30,41 @@ Il progetto è suddiviso in fasi sequenziali all'interno di un Jupyter Notebook:
 * Addestramento parallelo di modelli SAGA e L-BFGS su scaglioni di dati crescenti (10k, 50k, 250k+).
 * Dimostrazione empirica del raggiungimento del medesimo minimo globale della funzione convessa (concordanza delle Matrici di Confusione > 99.9%).
 
-### Fase 3: Calcolo Approssimativo del Crossover 
+### Fase 3: Calcolo Approssimativo Costo Computazionale: SAGA vs L-BFGS
 
-Per mettere a confronto i due metodi ci si affida alla differenza del tempo di calcolo e quindi a quante operazioni deve fare la macchina per eseguire gli algoritmi
+Per mettere a confronto i due metodi ci si affida alla differenza del tempo di calcolo, misurando quante operazioni matematiche (FLOPs) deve eseguire la macchina per raggiungere la convergenza.
 
-L-BFGS calcola il Gradiente Esatto. Per fare un singolo passo (una iterazione), deve moltiplicare ogni singola riga per ogni singolo peso.Costo di 1 Iterazione: $\mathcal{O}(N \cdot d)$(In realtà fa circa $4 \cdot N \cdot d$ operazioni matematiche per calcolare loss e gradiente, ma nell'ordine di grandezza i coefficienti si tolgono).Iterazioni necessarie ($I$): L-BFGS è molto stabile. Sia che tu abbia mille o un miliardo di dati, ci metterà sempre circa lo stesso numero di iterazioni per trovare il fondo della vallata. Diciamo $I \approx 35$ iterazioni.
+#### 1. L-BFGS 
+L-BFGS calcola il Gradiente Esatto. Per fare un singolo passo (un'iterazione), deve moltiplicare ogni singola riga per ogni singolo peso.
+* **Costo di 1 Iterazione:** $\mathcal{O}(N \cdot d)$
+* **Iterazioni necessarie ($I$):** L-BFGS è estremamente stabile. Sia che si abbiano mille o un miliardo di dati, impiegherà sempre all'incirca lo stesso numero di iterazioni per trovare il fondo della vallata convessa (empiricamente, $I \approx 35$).
 
+Il costo totale è quindi lineare rispetto ai dati:
 $$Costo_{L-BFGS} = I \times (N \times d)$$
 
-SAGA aggiorna i pesi riga per riga (Step). Un'Epoca si completa quando ha letto tutte le $N$ righe una volta.Costo di 1 Step (singola riga): $\mathcal{O}(d)$Costo di 1 Epoca ($N$ Step): $N \times \mathcal{O}(d) = \mathcal{O}(N \cdot d)$
+#### 2. SAGA 
+SAGA aggiorna i pesi in modo stocastico, riga per riga (Step). Un'**Epoca** si completa quando l'algoritmo ha letto tutte le $N$ righe esattamente una volta.
+* **Costo di 1 Step (singola riga):** $\mathcal{O}(d)$
+* **Costo di 1 Epoca ($N$ Step):** $N \times \mathcal{O}(d) = \mathcal{O}(N \cdot d)$
 
+Il costo totale dipende da quante volte deve rileggere il dataset:
 $$Costo_{SAGA} = E \times (N \times d)$$
 
-Grazie alla formula di DEFAZIO si risce ad approsimare le epoche per SAGA tramite queste variabili:
-* $\kappa$ (Kappa): È il Numero di Condizionamento della matrice ($\kappa = \frac{L}{\mu}$). Rappresenta la complessità o la "pendenza" della vallata dell'errore (approssimato per eccesiva quantità di memoria per il calcolo).
-* $N$: Numero di campioni nel dataset (le partite di scacchi).
-* $\epsilon$: La tolleranza di errore desiderata espressa in potenze di 10
+#### 📐 La Stima delle Epoche (Formula di Defazio)
+Come facciamo a sapere quante Epoche ($E$) impiegherà SAGA? Grazie alla dimostrazione di Defazio (2014), possiamo calcolare un'approssimazione esatta tramite queste variabili:
+* **$\kappa$ (Kappa):** Il Numero di Condizionamento della matrice ($\kappa = \frac{L}{\mu}$). Rappresenta la complessità o la "pendenza" della vallata dell'errore.
+* **$N$:** Numero di campioni nel dataset (le partite di scacchi).
+* **$\epsilon$:** La tolleranza di errore desiderata.
 
-  $$E \approx \left( 1 + \frac{\kappa}{N} \right) \cdot \ln\left(\frac{1}{\epsilon}\right)$$
+La formula matematica per le Epoche necessarie a SAGA è:
 
-L-BFGS mantenendo un numero di Iterazioni costanti approssimabili (circa 35) si riesce anche qui a stimare il numero di epoche per poter costruire un grafico per confrontare i due metodi
+$$E \approx \bigg( 1 + \frac{\kappa}{N} \bigg) \cdot \ln\bigg(\frac{1}{\epsilon}\bigg)$$
 
----
+#### 📊 Il Crossover Algoritmico
+Poiché il blocco di costo $(N \times d)$ è identico per entrambi gli algoritmi, il vincitore assoluto si determina confrontando semplicemente **$I$ (Iterazioni di L-BFGS)** con **$E$ (Epoche di SAGA)**. 
+
+Mantenendo $I$ costante ($\approx 35$) e calcolando $E$ al variare di $N$, possiamo costruire un modello asintotico per individuare il punto di rottura ("Crossover") in cui SAGA diventa matematicamente superiore a L-BFGS.
+
 
 ## 📊 Risultati e Visualizzazioni
 
