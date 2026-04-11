@@ -35,9 +35,8 @@ Il progetto è suddiviso in fasi sequenziali all'interno di un Jupyter Notebook:
 Invece di affidarci a stime di *worst-case scenario*, l'algoritmo calcola la vera geometria della vallata dell'errore:
 
 * Calcolo del tensore di Covarianza $X^T X$.
-* Estrazione di $\lambda_{min}$ e $\lambda_{max}$ tramite algebra lineare pura (`numpy.linalg.eigvalsh`).
 * Calcolo esatto del **Numero di Condizionamento (L2)** $\kappa$.
-* Proiezione asintotica (fino a $10^9$ osservazioni) tramite l'equazione di convergenza limite di Defazio (2014) per SAGA.
+* Proiezione asintotica (fino a $10^9$ osservazioni) tramite l'equazione di convergenza limite di Defazio per SAGA.
 
 ---
 
