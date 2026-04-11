@@ -30,20 +30,33 @@ Il progetto è suddiviso in fasi sequenziali all'interno di un Jupyter Notebook:
 * Addestramento parallelo di modelli SAGA e L-BFGS su scaglioni di dati crescenti (10k, 50k, 250k+).
 * Dimostrazione empirica del raggiungimento del medesimo minimo globale della funzione convessa (concordanza delle Matrici di Confusione > 99.9%).
 
-### Fase 3: Calcolo Geometrico del Crossover 
+### Fase 3: Calcolo Approssimativo del Crossover 
 
-Invece di affidarci a stime di *worst-case scenario*, l'algoritmo calcola la vera geometria della vallata dell'errore:
+Per mettere a confronto i due metodi ci si affida alla differenza del tempo di calcolo e quindi a quante operazioni deve fare la macchina per eseguire gli algoritmi
 
-* Calcolo del tensore di Covarianza $X^T X$.
-* Calcolo esatto del **Numero di Condizionamento (L2)** $\kappa$.
-* Proiezione asintotica (fino a $10^9$ osservazioni) tramite l'equazione di convergenza limite di Defazio per SAGA.
+L-BFGS calcola il Gradiente Esatto. Per fare un singolo passo (una iterazione), deve moltiplicare ogni singola riga per ogni singolo peso.Costo di 1 Iterazione: $\mathcal{O}(N \cdot d)$(In realtà fa circa $4 \cdot N \cdot d$ operazioni matematiche per calcolare loss e gradiente, ma nell'ordine di grandezza i coefficienti si tolgono).Iterazioni necessarie ($I$): L-BFGS è molto stabile. Sia che tu abbia mille o un miliardo di dati, ci metterà sempre circa lo stesso numero di iterazioni per trovare il fondo della vallata. Diciamo $I \approx 35$ iterazioni.
+
+$$Costo_{L-BFGS} = I \times (N \times d)$$
+
+SAGA aggiorna i pesi riga per riga (Step). Un'Epoca si completa quando ha letto tutte le $N$ righe una volta.Costo di 1 Step (singola riga): $\mathcal{O}(d)$Costo di 1 Epoca ($N$ Step): $N \times \mathcal{O}(d) = \mathcal{O}(N \cdot d)$
+
+$$Costo_{SAGA} = E \times (N \times d)$$
+
+Grazie alla formula di DEFAZIO si risce ad approsimare le epoche per SAGA tramite queste variabili:
+* $\kappa$ (Kappa): È il Numero di Condizionamento della matrice ($\kappa = \frac{L}{\mu}$). Rappresenta la complessità o la "pendenza" della vallata dell'errore (approssimato per eccesiva quantità di memoria per il calcolo).
+* $N$: Numero di campioni nel dataset (le partite di scacchi).
+* $\epsilon$: La tolleranza di errore desiderata espressa in potenze di 10
+
+  $$E \approx \left( 1 + \frac{\kappa}{N} \right) \cdot \ln\left(\frac{1}{\epsilon}\right)$$
+
+L-BFGS mantenendo un numero di Iterazioni costanti approssimabili (circa 35) si riesce anche qui a stimare il numero di epoche per poter costruire un grafico per confrontare i due metodi
 
 ---
 
 ## 📊 Risultati e Visualizzazioni
 
 L'estrazione del condizionamento $\kappa$ ha permesso di tracciare il collasso asintotico di L-BFGS. 
-Come si evince dal grafico sottostante, oltre una certa soglia critica di osservazioni (il *Crossover*), l'aggiornamento stocastico di SAGA annienta l'overhead computazionale di L-BFGS, risparmiando miliardi di operazioni FLOPs.
+Come si evince dal grafico sottostante, oltre una certa soglia critica di osservazioni (il *Crossover*), l'aggiornamento stocastico di SAGA annienta l'analisi computazionale di L-BFGS, risparmiando miliardi di operazioni.
 
 ---
 
