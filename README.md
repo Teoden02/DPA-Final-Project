@@ -74,9 +74,11 @@ Come si evince dal grafico sottostante, oltre una certa soglia critica di osserv
 ---
 
 ## 🚀 Come avviare il progetto
-Per il progetto utlizzare questo dataset: https://www.kaggle.com/datasets/arevel/chess-games 
-inserendolo direttamente nella cartella DPA_FINAL_PROJECT 
-controllare non ci siano altri file .csv 
+Se da github non installa direttamente il dataset (quasi 4gb) andare su kaggle e scaricare questo dataset:
+
+https://www.kaggle.com/datasets/arevel/chess-games 
+
+inserendolo direttamente nella cartella DPA_FINAL_PROJECT controllare non ci siano altri file .csv
 
 Tutte le librerie richieste sono elencate nei requirement da installare nel virtual enviroment
 
